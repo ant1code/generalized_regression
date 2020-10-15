@@ -1,0 +1,33 @@
+---
+title: "week_5_clinical_bio_3"
+author: "George Kazantzidis"
+date: "15/10/2020"
+output: pdf_document
+---
+
+
+Celiac disease is a condition that impairs the ability of the gut to absorb nutrients. A useful measure of nutritional status is the biceps skinfold thickness, which has standard deviation 2.3 mm in this population. A new nutritional program is proposed and is to be compared with the present program. Suppose the two groups of equal size are compared at the 5% significance level.
+
+ 
+```{r}
+power.t.test(delta = 0.5 , sig.level = 0.05, power = 0.9, sd = 2.3, alternative = "two.sided")
+
+power.t.test(delta = 0.5 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")
+
+power.t.test(n = 300 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")
+
+power.t.test(delta = 1 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")
+
+n1<- power.t.test(delta = 1 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")
+n1$n*2
+```
+
+3a = `r round(power.t.test(delta = 0.5 , sig.level = 0.05, power = 0.9, sd = 2.3, alternative = "two.sided")$n, 1) `
+
+3b = `r round(power.t.test(delta = 0.5 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")$n, 1) `
+
+3c = `r round(power.t.test(n = 300 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")$n, 1) `
+
+3d = `r round(power.t.test(delta = 1 , sig.level = 0.05, power = 0.8, sd = 2.3, alternative = "two.sided")$n, 1) `
+
+3e = `r round(n1$n*2, 1) `
