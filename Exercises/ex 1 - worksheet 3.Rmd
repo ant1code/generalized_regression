@@ -1,0 +1,102 @@
+---
+title: "Generalized Reg - Worksheet 3"
+author: "Tiziana Errera"
+date: "05/10/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1 
+
+
+
+A study looking at breast cancer in women compared cases with non-cases, and found that
+75/100 cases did not use calcium supplements compared with 25/100 of the non-cases.
+
+#a - Develop a 2 x 2 table to display the data.
+
+```{r data}
+xt <- matrix(c("a", "b", "c", "d"),ncol=2,byrow=TRUE)
+colnames(xt) <- c("Diseased","Healthy")
+rownames(xt) <- c("Exposed", "Not Exposed")
+xt <- as.table(xt)
+xt
+x <- matrix(c(25,75, 75,25),ncol=2,byrow=TRUE)
+ colnames(x) <- c("Case - Diseased","Control - Healthy")
+ rownames(x) <- c("Exposed", "Not Exposed")
+ x <- as.table(x)
+ x
+
+
+```
+
+#b - Calculate the odds ratio (OR) based on the 2 x 2 table.
+
+ 
+The Odds Ratio: (axd)/(bxc) = (25x25)/(75x75) = 0.11
+
+
+#c - Interpret the odds ratio.
+
+This odds indicate clearly that the exposition of calcium supplement has protective effect, the reduced risk is 89% (1-0.1*100) for exposure.
+ 
+
+#d - Define the following data frame in R and fit the binary logistic regression model by using the below glm() function.
+
+```{r data_frame and model}
+
+disease <- factor(c(rep(1, 75), rep(0, 25), rep(1, 25), rep(0, 75)),
+levels = c("1", "0"),
+labels = c("yes", "no"))
+supp <- factor(c(rep("no.calc", 100), rep("calc", 100)),
+levels = c("no.calc", "calc"),
+labels = c("no.calc", "calc"))
+RCT <- data.frame(disease = disease,
+supp = supp)
+table(RCT$supp, RCT$disease)
+bin.log.mod <- glm(disease ~ supp, family = "binomial", data = RCT)
+
+```
+
+#e - How can you extract the (same) odds ratio as calculated in b) from the glm() model?
+
+```{r oddsratio}
+
+odds_ratio <- exp(coef(bin.log.mod))^-1
+
+output<- c("The odds ratio is: ", round(odds_ratio[2], digits = 2))
+output
+
+
+```
+##Exercise 2
+
+The CHFLS data set from package HSAUR2 is a subset of the Chinese Health and Family Life
+Survey (cf. Exercise 3, Worksheet 1).
+We want to study the impact of age and income on happiness in a proportional odds logistic
+model. For this, the following polr() model is fitted:
+
+```{r upload}
+
+library("MASS")
+data("CHFLS", package = "HSAUR2")
+polr.mod <- polr(R_happy ~ R_age + R_income, data = CHFLS)
+
+```
+
+Happy it has been defined in a ordered logistic regression model, 
+#a - What are the characteristics of the response variable R_happy? 
+Apply the following commands to the previously defined R object polr.mod.
+
+```{r summary}
+
+summary(polr.mod)
+c(polr.mod$zeta, coef(polr.mod))
+exp(c(polr.mod$zeta, coef(polr.mod)))
+
+```
