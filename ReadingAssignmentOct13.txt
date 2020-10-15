@@ -1,0 +1,9 @@
+
+## Two-sample case: Nonparametric & Parametric (recap)
+Sections 5.1 and 5.2
+(typos were corrected in TA.pdf)
+
+## Two-sample case: Distribution free
+Section 5.3
+
+

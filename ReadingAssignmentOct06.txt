@@ -1,0 +1,11 @@
+
+## Unconditional parameterisation (recap)
+Section 4.5: Focus on parameterisations and corresponding estimated
+distribution functions (in figures), ignore details on parameter estimation
+(likelihoods etc).
+
+## Two-sample case by example (recap)
+Pages 9-16
+
+## Two-sample case: Nonparametric & Parametric
+Sections 5.1 and 5.2

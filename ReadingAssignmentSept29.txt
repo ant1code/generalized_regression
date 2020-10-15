@@ -1,0 +1,15 @@
+
+## Random variables + univariate distibtions
+Section 3.3
+
+## Transformation functions
+Section 3.4
+
+## Unconditional models and two-sample case by example
+Pages 4-16 
+
+## Unconditional parameterisation
+Section 4.5: Focus on parameterisations and corresponding estimated
+distribution functions (in figures), ignore details on parameter estimation
+(likelihoods etc).
+
