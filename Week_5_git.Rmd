@@ -1,0 +1,63 @@
+---
+title: "GK_week_5"
+author: "George Kazantzidis"
+date: "15/10/2020"
+output: html_document
+---
+
+```{r}
+library(carData)
+head(Mroz)
+
+mroz.glm.mod<-glm(lfp ~. , family=binomial(link = "logit"), data= Mroz)
+su<-summary(mroz.glm.mod)
+exp(su$coefficients[4,1])
+
+confint(mroz.glm.mod)
+
+
+library(tram)
+Lehmann_data
+```
+
+For every unit of age increase in people's age, the odds of being more likely to participate in lagor force is changing by exp(`r su$coefficients[4,1]`) times, that is `r exp(su$coefficients[4,1])` holding constant all other variables. 
+
+
+
+Reverse time hazard is the probability that your bmi is X given that your bmi is less than or equal to X. Then exp b is the probability of a man having a bmi given that his bmi is less than or equal to this bmi, devided by the same probability for women. Obviously, if beta is larger than 1, then the probability is larger for men while if it less than one, the probability is larger for women. 
+
+
+```{r , out.width= "50%" , fig.show= "hold"}
+library(tram)
+dat<-read.table("lehmann_data.csv")
+lehmann_data$sex<-factor(lehmann_data$sex)
+Lehmann(bmi ~ sex , data = lehmann_data)
+lehmann_data<-as.data.frame(lehmann_data)
+res<-Lehmann(bmi ~ sex, data = lehmann_data)
+res2<-summary(res)
+
+
+new<-data.frame(sex= c(rep("male",50), rep("female",50)))
+new$sex<-factor(new$sex)
+pre<-simulate(as.mlt(res), newdata = new)
+plot(pre$approxy, col = new$sex)
+
+library(ggplot2)
+dataa<-data.frame(new , pre$approxy)
+ggplot(data = dataa)+
+  geom_density(aes(pre.approxy, group=  sex, fill = sex), alpha = 0.8)+
+  theme_classic()+
+  ggtitle(label = "Densities for simulated data")+
+  xlab(label = "bmi")
+
+library(evd)
+
+ggplot(data=dataa, aes(x=pre.approxy), geom="distribution") + 
+  # stat_function(fun=pgumbel)+
+ stat_ecdf(aes(pre.approxy, group = sex, col = sex),geom = "step")+
+  ggtitle(label = "Ecdf for males and females")+
+  xlab(label = "bmi value")+
+  ylab(label = "probability")+
+  theme_classic()
+```
+
