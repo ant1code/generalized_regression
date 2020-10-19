@@ -2,7 +2,9 @@
 title: "GK_week_5"
 author: "George Kazantzidis"
 date: "15/10/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r}
@@ -27,23 +29,49 @@ For every unit of age increase in people's age, the odds of being more likely to
 Reverse time hazard is the probability that your bmi is X given that your bmi is less than or equal to X. Then exp b is the probability of a man having a bmi given that his bmi is less than or equal to this bmi, devided by the same probability for women. Obviously, if beta is larger than 1, then the probability is larger for men while if it less than one, the probability is larger for women. 
 
 
-```{r , out.width= "50%" , fig.show= "hold"}
+```{r}
 library(tram)
-dat<-read.table("lehmann_data.csv")
+dat<-read.table("lehmann_data.csv", sep=",", head = TRUE)
+lehmann_data <- dat
 lehmann_data$sex<-factor(lehmann_data$sex)
 Lehmann(bmi ~ sex , data = lehmann_data)
 lehmann_data<-as.data.frame(lehmann_data)
 res<-Lehmann(bmi ~ sex, data = lehmann_data)
 res2<-summary(res)
-
-
-new<-data.frame(sex= c(rep("male",50), rep("female",50)))
+res2
+### START OF SIM
+new<-data.frame(sex= c(rep(0,3), rep(1,1)))
 new$sex<-factor(new$sex)
-pre<-simulate(as.mlt(res), newdata = new)
-plot(pre$approxy, col = new$sex)
+pre<-simulate(as.mlt(res), newdata = new, nsim = 1000)
+
+predict(res, type = "distribution", newdata = new)
+head(pre)
+newdf<-numeric()
+for (i in (1:1000)){
+  newdf[i] <- max(pre[[i]]$exact[1:3])
+}
+#1 CATEGORY
+new1<-data.frame(sex= c(rep(1,3), rep(0,1)))
+new1$sex<-factor(new1$sex)
+pre1<-simulate(as.mlt(res), newdata = new1, nsim = 1000)
+
+predict(res, type = "distribution", newdata = new1)
+head(pre1)
+newdf1<-numeric()
+for (i in (1:1000)){
+  newdf1[i] <- max(pre1[[i]]$exact[1:3])
+}
+### EMPIRICAL CDF OF SEX 0 HERE SIMULATED
+#other <- predict(res, type = "distribution", newdata = new)
+#other <- other[,4]
+plot(ecdf(newdf1))
+plot(ecdf(newdf))
+dat<-data.frame(newdf,newdf1)
+
+
 
 library(ggplot2)
-dataa<-data.frame(new , pre$approxy)
+dataa<-data.frame(new , newdf)
 ggplot(data = dataa)+
   geom_density(aes(pre.approxy, group=  sex, fill = sex), alpha = 0.8)+
   theme_classic()+
@@ -52,9 +80,10 @@ ggplot(data = dataa)+
 
 library(evd)
 
-ggplot(data=dataa, aes(x=pre.approxy), geom="distribution") + 
+ggplot(data=dat, aes(x=newdf), geom="distribution") + 
   # stat_function(fun=pgumbel)+
- stat_ecdf(aes(pre.approxy, group = sex, col = sex),geom = "step")+
+ stat_ecdf(aes(newdf),geom = "step")+
+   stat_ecdf(aes(newdf1),geom = "step", color = "red")+
   ggtitle(label = "Ecdf for males and females")+
   xlab(label = "bmi value")+
   ylab(label = "probability")+
