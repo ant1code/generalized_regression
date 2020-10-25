@@ -1,0 +1,102 @@
+---
+title: "Week_06"
+author: "George Kazantzidis"
+date: "23/10/2020"
+output: pdf_document
+---
+
+## Problem 16 a
+
+$$f(X;\theta)= 1/sqrt(2\pi \theta) * exp(-(x-\theta)^2/2\theta)  $$
+$$L(\theta)= (1/sqrt(2\pi \theta))^n * exp(-\sum_{i=1}^{n}(x_{i}-\theta)^2/2\theta)  $$
+$$l(\theta)= -n*log(sqrt(2\pi \theta)) - \sum_{i=1}^{n}(x_{i}-\theta)^2/2\theta  $$
+
+
+
+```{r}
+data<-read.csv("zurichtemp.csv")
+log_fun<-function(theta ) {- 192* log(sqrt(2*theta*pi))- sum((data$Temperature-theta)^2)/2*theta}
+
+theta_e<-seq(from = 3, to = 20, length.out = 100)
+
+res1<-numeric()
+
+for (i in 1:100)
+{
+  res1[i]<-log_fun(theta_e[i])
+}
+plot(theta_e,res1, type = "l")
+
+```
+
+
+## Problem 16 b
+
+Estimation of parameter theta with function optim
+
+```{r, message=FALSE, warning=FALSE}
+
+start_par<-7
+opt <-optim(start_par, log_fun , 
+            control = list(fnscale = -1), method = "BFGS",
+            hessian = TRUE)
+opt
+true_theta<-opt$par
+```
+
+For the visualization of the estimater distribution i use the bootstrap method with 100 replicates. The plot illustrates the histogram of the estimators theta, their mean (red line) and 95% coinfidence intervals (green lines)
+
+```{r, message=FALSE, warning=FALSE}
+qual<-numeric()
+for( i in 1:100)
+{
+  gen_dat<-sample(data$Temperature, replace = TRUE)
+  log_fun_2<-function(theta ) {- 192* log(sqrt(2*theta*pi))- sum((gen_dat-theta)^2)/2*theta}
+  opt_2 <-optim(start_par, log_fun_2 , 
+              control = list(fnscale = -1), method = "BFGS",
+              hessian = TRUE)
+  qual[i]<- opt_2$par
+  
+}
+
+quantile(qual, probs = c(.025 , .975))
+hist(qual)
+abline(v = mean(qual), col = 2)
+abline(v = quantile(qual, probs = c(.025)), col = 3)
+abline(v = quantile(qual, probs = c(.975)), col = 3)
+
+```
+
+## Problem 16 c
+
+
+```{r, message=FALSE, warning=FALSE}
+
+qual2<-numeric()
+n<-seq(from = 10 , to = length(data$Temperature), length.out = 100)
+n<-round(n)
+
+for ( k in 1:100)
+{
+  
+  
+    gen_dat<-sample(data$Temperature, replace = TRUE, size = n[k])
+  
+    log_fun_3<-function(theta ) {- n[k]* log(sqrt(2*theta*pi))- sum((gen_dat-theta)^2)/2*theta}
+     opt_3 <-optim(start_par, log_fun_3 , 
+                control = list(fnscale = -1), method = "BFGS",
+                hessian = TRUE)
+     qual2[k]<- opt_3$hessian
+
+  
+}
+
+
+plot(n , -qual2, main = "Fisher information for the same function in relation to the sample size n")
+```
+
+
+## Problem 16 d
+
+To illustrate the dependence of the curvature of theta log likelihood function (at the point of theta estimator) on size of the sample, I use the fisher information ( that is, the negative hessian value and can be derived from the optim fucntion). The Fisher information may be seen as the curvature of the  graph of the log-likelihood. Near the maximum likelihood estimate, low Fisher information therefore indicates that the maximum appears "blunt", that is, the maximum is shallow and there are many nearby values with a similar log-likelihood. Conversely, high Fisher information indicates that the maximum is sharp. 
+In the above plot, we can clearly observe that fisher information increases with the increase of the sample size. Thus, the curvature of the log likelihood function near the maximum likelihood estimate, becomes more sharp are the size of our sample increases.
