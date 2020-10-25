@@ -39,6 +39,7 @@ lehmann_data<-as.data.frame(lehmann_data)
 res<-Lehmann(bmi ~ sex, data = lehmann_data)
 res2<-summary(res)
 res2
+# 1 out of exp(beta) of sex = 0 observations results in bmi of smaller value than one observation of sex 1.
 ### START OF SIM
 new<-data.frame(sex= c(rep(0,3), rep(1,1)))
 new$sex<-factor(new$sex)
@@ -71,12 +72,12 @@ dat<-data.frame(newdf,newdf1)
 
 
 library(ggplot2)
-dataa<-data.frame(new , newdf)
-ggplot(data = dataa)+
-  geom_density(aes(pre.approxy, group=  sex, fill = sex), alpha = 0.8)+
-  theme_classic()+
-  ggtitle(label = "Densities for simulated data")+
-  xlab(label = "bmi")
+dataa<-data.frame(newdf , newdf1)
+# ggplot(data = dataa)+
+#  geom_density(aes(pre.approxy, group=  sex, fill = sex), alpha = 0.8)+
+#  theme_classic()+
+#  ggtitle(label = "Densities for simulated data")+
+#  xlab(label = "bmi")
 
 library(evd)
 
@@ -89,4 +90,6 @@ ggplot(data=dat, aes(x=newdf), geom="distribution") +
   ylab(label = "probability")+
   theme_classic()
 ```
-
+```{r}
+plot(ecdf(newdf1))
+```

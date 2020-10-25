@@ -1,0 +1,61 @@
+---
+title: "Worksheet 6"
+author: "Tomas Martinek"
+date: "10/25/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 16
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(readr)
+zurichtemp <- read_csv("http://user.math.uzh.ch/furrer/download/sta402mat924/zurichtemp.csv")
+x <- zurichtemp$Temperature
+hist(x)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+par_mu <- seq(-20, 20, length.out = 10000)
+par_sd <- par_mu^2
+likelihood <- numeric(length(par_mu))
+start_par<- 15
+my_likelihood <- function(par_mu) {
+  sum(dnorm(x, mean = par_mu, sd = par_sd, log = TRUE))
+}
+opt <-optim(start_par, function(par_mu) {sum(dnorm(x, mean = par_mu, sd = par_sd, log = TRUE))}, 
+            control = list(fnscale = -1), method = "BFGS",
+            hessian = TRUE)
+opt$par
+```
+
+For some reason, it outputs value of 11.61, which can't be correct, but I don't see where is my mistake.
+```{r}
+y <- rnorm(seq(0,100, length = 10000), opt$par, (opt$par)^2)
+hy <- hist(y, plot = FALSE)
+hx <- hist(x, plot = FALSE)
+plot(hx, col = "blue")
+plot(hy, col = "red")
+```
+
+```{r}
+plot(hy, col = "red")
+z<- dnorm(y, mean=11.60666, sd=134.715)
+plot(y,z, add = TRUE)
+
+y <- rnorm(seq(0,100, length = 100), opt$par, (opt$par)^2)
+z<- dnorm(y, mean=11.60666, sd=134.715)
+plot(y,z)
+```
+d) Should be that the higher the n in c is, the smaller is the derivation at l(theta).
