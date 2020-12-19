@@ -1,0 +1,25 @@
+---
+title: "Regression 11"
+author: "Tomas Martinek"
+date: "12/1/2020"
+output: pdf_document
+---
+
+## Worksheet 11
+
+```{r}
+data("CHFLS", package = "HSAUR2")
+library("MASS")
+polr.mod <- polr(R_happy ~ R_age + R_income, data = CHFLS)
+summary(polr.mod)
+```
+
+In this model, we consider the odds of being higher than a certain category, as opposed to being lower than a certain cutpoint given age and income. 
+For example, suppose we are interested in very happy, as opposed to somewhat happy. In this case, we take intercept 1.4127, betas stay the same (hence proportional (log)odds).
+Lets say age == 30, income == 500.
+log(OR) = 1.4127 -0.006279*30 + 500*0.000235 = 1.34
+means: logs odds of being very happy as opposed to happy are 13/10.
+== odds are 3.82, being very happy is therefore pretty likely.
+
+General Interpretation:
+In all these cases, the odds of being in a higher category multiply by exp(-0.006279) for every increase in age and by exp(0.000235) for 1 increase in income - on average.

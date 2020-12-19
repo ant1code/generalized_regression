@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+author: "Griffin White"
+date: "11/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+dat <- c(225, 175, 198, 189, 189, 130, 162, 135, 119, 162)
+
+estimated <- function(a, data=dat) {
+  
+  n <- length(data)
+  return(sum((a-1)*log(data)+log(a)-a*log((sum(data**a)/n)**(1/a)) - ((data)/((sum(data**a)/n)**(1/a)))**a))
+  
+}
+
+profile <- function(a, mu, data=dat) {
+  
+  n <- length(data)
+  return(sum((a-1)*log(data)+log(a)-a*log(mu) - ((data)/(mu))**a))
+  
+}
+
+xs <- seq(from=0.01, to=15, by=0.01)
+ys <- rep(NA, length(xs))
+
+for(i in 1:length(xs)){
+  
+  ys[i] = estimated(a=xs[i])
+  
+}
+
+df<- data.frame()
+mus <- seq(from=0.01, to=15, by=0.01)
+
+for(alpha in 1:length(xs)) {
+  for(mu in 1:length(mus)) {
+    
+    value <- profile(a=xs[alpha], mu=mus[mu]) 
+    df[alpha,mu] <- value
+    
+  }
+}
+
+print(paste("our MLE for alpha is given by ", xs[which.max(ys)]))
+# contour plot
+contour(mus, alpha, df, main = "Joint log-likelihood")
+
+as.matrix(df)
+
+plot(xs,ys, main="estimated-log-likelihood of L(a, mu) with respect to a")
+
+```

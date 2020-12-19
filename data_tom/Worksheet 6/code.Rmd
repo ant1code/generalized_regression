@@ -1,0 +1,59 @@
+---
+title: "GR 6"
+author: "Tomas Martinek"
+date: "10/22/2020"
+output: pdf_document
+---
+
+```{r}
+library(HSAUR2)
+df <- womensrole
+df$percentage_agree <- df$agree/(df$agree+df$disagree)
+df$weight <- df$agree+df$disagree
+```
+
+a)
+```{r }
+my.fit <- glm(percentage_agree ~ gender + education, data = df, family='binomial', weights = df$weight)
+summary(my.fit)
+```
+
+b)
+```{r}
+my.fit2 <- glm(percentage_agree ~ gender + education + education*gender, data = df, family=binomial, weights = df$weight)
+summary(my.fit2)
+```
+c) Not necessarily, but it is interesting.
+```{r}
+#create dataset -20, 20 with every values for every variable
+library(car)
+
+bae <- seq(-40,40, by = 0.001)
+b1<-seq(-20, 40, by = 0.001)
+b2<-seq(-40,-20, by = 0.001)
+c1<-seq(0, 40, by = 0.001)
+c2<-seq(-40,0, by = 0.001)
+d1<-seq(20, 40, by = 0.001)
+d2<-seq(-40,20, by = 0.001)
+b=c(b1,b2)
+c=c(c1,c2)
+d=c(d1,d2)
+for (i in (1:40000)){
+  a=i
+  for (k in 1:196){}
+  xyz <- bae[i]*data$varg[k]+b[i]*data$vart[k]+c[i]*data$vars[k]+d[i]*data$varn[k]
+  estimates[i] <- -log((1+exp(xyz)))
+}
+}
+summary(estimates)
+```
+
+```{r}
+library(TH.data)
+data <- GlaucomaM
+# c) using glm
+my.fit3 <- glm(Class ~ varg -1 + vart + vars + varn, data = data, family=binomial)
+summary(my.fit3)
+# odds = p/(1-p)
+```
+

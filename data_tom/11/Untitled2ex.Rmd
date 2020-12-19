@@ -1,0 +1,64 @@
+---
+title: "Generalized Regressio 11"
+author: "Tomas Martinek"
+date: "11/27/2020"
+output: pdf_document
+---
+
+```{r}
+library(faraway)
+df <- orings
+```
+## Exercise 1
+```{r}
+library(mlbench)
+data(BostonHousing2)
+data <- BostonHousing2
+a <- table(data$cmedv)
+sum(a) + 1 # number of observations + 1 == nrow(data) + 1
+freqs <- a/(sum(a) + 1)
+cumsum(freqs)
+
+plot(as.numeric(names(a)), cumsum(freqs), type="s") # same result for both options, right continuous step-fct
+# sort(unique(BostonHousing2$cmedv))
+
+par(nfrow = c(1,2))
+plot(as.numeric(names(a)), qnorm(cumsum(freqs)), type="s", xlab = "cmedv", ylab = "trafo", main = "Stf Normal") # the transformation function
+
+plot(as.numeric(names(a)), log(-log(1- cumsum(freqs))), type="s", xlab = "cmedv", ylab = "trafo", main = "Stf Gomepertz") # the transformation function
+```
+## Exercise 2
+
+```{r}
+#!!!!!!!!!!!!!!!!!
+# instead of damage = 5 counts, create 5x entry damage == 1.
+df[1,] <- c(53,1)
+df[24,] <- c(53,1)
+df[25,] <- c(53,1)
+df[26,] <- c(53,1)
+df[27,] <- c(53,1)
+#!!!!!!!!!!!!!!!!!
+df <- orings
+fit1 <- glm(cbind(damage, 6- damage) ~ temp, data = df, family = binomial(link = "logit"))
+summary(fit1)
+# When using  logit link function, we are getting log odds. 
+# exp(beta) == multiplicative(?) change in (linear) odds given all other variables constant.
+```
+
+
+```{r}
+x <- seq(30,120, by = 1)
+# probability of damage given temperature, page 55 in the book.
+plot(x,1/(1+exp(-(summary(fit1)$coef[1,1])-summary(fit1)$coef[2,1]*x)))
+rug(df$temp)
+# extrapolation!
+```
+```{r}
+fit2 <- glm(cbind(damage, 6- damage) ~ temp, data = df, family = binomial(link = "probit"))
+# probit interpretation: the coefficients have no interepretation per se (really?), but the value of b0 + bx = inverse of a standard normal distribution == gives probability.
+fit3 <- glm(cbind(damage, 6- damage) ~ temp, data = df, family = binomial(link = "cloglog"))
+# interepretation: cloglog leads to discrete Cox proportional Hazards model,
+# exp(-Xb) is the hazard ratio comparing conditional cumulative hazard function to baseline (???)
+summary(fit3)
+# increasae temp by 1 -> hazard (=instatenous event rate == in this case - hazard of the event, because no time involved here) descreses by exp(-0.2)
+```

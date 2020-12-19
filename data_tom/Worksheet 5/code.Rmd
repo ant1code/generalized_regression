@@ -1,0 +1,69 @@
+---
+title: "Generalized Regression 5"
+author: "Tomas Martinek"
+date: "10/15/2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(carData)
+mroz <- Mroz
+mroz$lfp <- as.factor(mroz$lfp)
+mroz.gml.mod <- glm(lfp ~ k5 + k618 + age + wc + hc + lwg + inc, mroz, family = binomial(link='logit'))
+summary(mroz.gml.mod)
+```
+Exp(b) interpretation: for every change in age, the odds of yes/no multiply by the exp(b).
+
+!!!!!!! ASK: what is the exact interpretation for these betas in the model? The log-odds decreases by the coefficient of age for every 1 increase in age? What is the exact interpretation of log-odds?
+
+!!!!!!! ASK: what exactly is the reverse time hazard?
+
+
+```{r, echo=FALSE}
+confint(mroz.gml.mod)
+```
+## Exercise 2
+
+```{r}
+library(tram)
+library(readr)
+lehmann_data <- read_csv("~/OneDrive - uzh.ch/UZH/HS20/GR_HUB/generalized_regression/Week_5/lehmann_data.csv")
+lehmann_data$sex<-factor(lehmann_data$sex)
+x <- Lehmann(bmi ~ sex, data = as.data.frame(lehmann_data))
+summary(lehmann_data)
+female <- c(lehmann_data$bmi)
+female[2]
+```
+```{r}
+new<-data.frame(sex= c(rep(0,5), rep(1,5)))
+new$sex <- factor(new$sex)
+abc <- simulate(as.mlt(x), newdata = new)
+```
+
+
+
+
+
+```{r}
+library(tram)
+dat<-read.table("lehmann_data.csv")
+Lehmann(bmi ~ sex , data = lehmann_data)
+lehmann_data$sex<-factor(lehmann_data$sex)
+res<-Lehmann(bmi ~ sex, data = lehmann_data)
+lehmann_data<-as.data.frame(lehmann_data)
+res2<-summary(res)
+
+new<-data.frame(sex= c(rep("male",500), rep("female",500)))
+new
+new$sex<-factor(new$sex)
+pre<-simulate(as.mlt(res), newdata = new)
+pre
+plot(pre$approxy, col = new$sex)
+females <- tail(pre$approxy, n = 500)
+males <- head(pre$approxy, n = 500)
+hist(females)
+hist(males)
+```
+

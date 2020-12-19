@@ -1,0 +1,44 @@
+---
+title: "STA406 Worksheet 1"
+output: pdf_document
+author: Jessica Lam, Tomas Martinek
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+```
+
+## Exercise 1 
+
+### (a) Roll a die 10 times and compute the ecdf. 
+```{r}
+library(ggplot2)
+library(gridExtra)
+set.seed(1)
+
+rolls <- data.frame(x=sample(1:6, 10, replace=TRUE))
+
+base <- ggplot(rolls) + scale_x_discrete(limits=factor(1:6)) + 
+  scale_y_continuous(limits=0:1) + expand_limits(x=c(0.4, 6.6))
+ecdf_1a <- base + geom_step(aes(x=x, y=..y..), stat="ecdf") + 
+  ylab(bquote("ecdf(x)"))
+hist_1a <- ggplot() + geom_bar(data=rolls, aes(x=x)) + 
+  scale_x_discrete(limits=factor(1:6))
+grid.arrange(ecdf_1a, hist_1a, ncol=2)
+```
+
+### (b) Roll the die 10,000 times. Compare the ecdf and the cdf. 
+```{r}
+set.seed(1)
+
+rolls <- data.frame(x=sample(1:6, 10000, replace=TRUE))
+
+cdf_die <- function(x) {
+  return(pmin(1, pmax(0, floor(x)/6)))
+}
+plot_1b <- base + 
+  geom_step(data=rolls, aes(x=x, y=..y..), stat="ecdf", col ="red") + 
+  stat_function(fun=cdf_die, col ="blue") + ylab("n")
+plot_1b
+```
+

@@ -1,0 +1,60 @@
+---
+title: "Generalized_9"
+author: "Tomas Martinek"
+date: "11/12/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Generalized Regression 9    
+
+```{r}
+cherry <- read.csv("~/OneDrive - uzh.ch/UZH/HS20/STA 406 Generalized Regression/week 9/cherry.csv", sep=";")
+```
+a,b)
+```{r}
+par(mfrow=c(2,2))
+plot(lm(Volume ~ Girth, data = cherry))
+```
+
+a,b)
+```{r}
+par(mfrow=c(2,2))
+plot(lm(Volume ~ log(Girth) + log(Height), data = cherry))
+```
+
+I would use the first model, because the Q-Q plot looks more "normal".
+
+
+## Exercise 2
+a) Change of activity for every day, given all the variables constant.
+b) activity = 3*treated + 4*observed + dosage*1 = -7.4245 + 3*(-7.5673) + 4*17.8840 + 
+
+
+## Exercise 3
+
+```{r}
+set.seed(123)
+my_factor <- sample(factor(rep(c(0, 1), each = 5), levels = c(0, 1),labels = c("placebo", "paracetamol")))
+matrix <- cbind(c(0,0,0,0,0,1,1,1,1,1),c(1,1,1,1,1,0,0,0,0,0))
+```
+
+c) The german, because it is the biggest group?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
